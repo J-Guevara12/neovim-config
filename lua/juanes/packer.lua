@@ -41,6 +41,13 @@ return require('packer').startup(function(use)
 	    {'L3MON4D3/LuaSnip'},     -- Required
 	  }
     }
+
+    -- install without yarn or npm
+    use({
+        "iamcco/markdown-preview.nvim",
+        run = function() vim.fn["mkdp#util#install"]() end,
+    })
+
     use { 'ms-jpq/chadtree',
         branch= 'chad',
         run = 'python3 -m chadtree deps'
