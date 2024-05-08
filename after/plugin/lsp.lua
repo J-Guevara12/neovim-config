@@ -1,4 +1,6 @@
 local lsp = require("lsp-zero")
+local luasnip = require 'luasnip'
+
 
 lsp.preset("recommended")
 
@@ -10,21 +12,44 @@ lsp.nvim_workspace()
 
 
 local cmp = require('cmp')
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
 local cmp_mappings = lsp.defaults.cmp_mappings({
-  ['<S-TAB>'] = cmp.mapping.select_prev_item(cmp_select),
-  ['<TABj>'] = cmp.mapping.select_next_item(cmp_select),
+  ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
+  ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
   ['<CR>'] = cmp.mapping.confirm({ select = true }),
   ["<C-Space>"] = cmp.mapping.complete(),
 })
 
 lsp.setup_nvim_cmp({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+      end,
+    },
   mapping = cmp_mappings
 })
 
 lsp.set_preferences({
     suggest_lsp_servers = false,
 })
+
+require "lsp_signature".setup({})
 
 lsp.on_attach(function(_, bufnr)
   local opts = {buffer = bufnr, remap = false}
@@ -53,3 +78,19 @@ lsp.setup()
 vim.diagnostic.config({
     virtual_text = true
 })
+
+
+require'lspconfig'.pylsp.setup{
+  settings = {
+    pylsp = {
+      plugins = {
+        pycodestyle = {
+          maxLineLength = 120
+        },
+        rope_autoimport = {
+            enabled = true
+        }
+      }
+    }
+  }
+}

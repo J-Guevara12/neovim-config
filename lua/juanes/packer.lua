@@ -36,10 +36,18 @@ return require('packer').startup(function(use)
 	    {'williamboman/mason-lspconfig.nvim'}, -- Optional
 
 	    -- Autocompletion
-	    {'hrsh7th/nvim-cmp'},     -- Required
-	    {'hrsh7th/cmp-nvim-lsp'}, -- Required
-	    {'L3MON4D3/LuaSnip'},     -- Required
+	    {'hrsh7th/nvim-cmp'},         -- Required
+	    {'hrsh7th/cmp-nvim-lsp'},     -- Required
+	    {'L3MON4D3/LuaSnip'},         -- Required
+        {'hrsh7th/cmp-buffer'},       -- Optional
+        {'hrsh7th/cmp-path'},         -- Optional
+        {'saadparwaiz1/cmp_luasnip'}, -- Optional
+        {'hrsh7th/cmp-nvim-lua'},     -- Optional
 	  }
+    }
+
+    use {
+      "ray-x/lsp_signature.nvim",
     }
 
     -- install without yarn or npm
@@ -86,6 +94,11 @@ return require('packer').startup(function(use)
 
             vim.g.user_emmet_install_global = 1
           end
+    }
+
+    use {
+      'kkoomen/vim-doge',
+      run = ':call doge#install()'
     }
 
     use { 'tpope/vim-surround' }
