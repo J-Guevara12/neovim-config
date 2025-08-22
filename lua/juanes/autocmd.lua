@@ -6,6 +6,13 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set('n', '<leader>t', ':w <CR> :terminal pytest %<CR>')
   end
 })
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "javascript",
+  callback = function()
+    vim.keymap.set('n', '<leader>k', ':w <CR> :! node %<CR>')
+    vim.keymap.set('n', '<leader>K', ':w <CR> :terminal node %<CR>')
+  end
+})
 vim.api.nvim_create_autocmd("BufRead", {
     pattern = "Jenkinsfile",
     callback = function ()
