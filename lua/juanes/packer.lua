@@ -10,7 +10,6 @@ return require('packer').startup(function(use)
 	  -- or                            , branch = '0.1.x',
 	  requires = { {'nvim-lua/plenary.nvim'} }
   }
-
   -- Colorscheme: tokyo night
   use 'folke/tokyonight.nvim'
 
@@ -45,6 +44,9 @@ return require('packer').startup(function(use)
         {'hrsh7th/cmp-nvim-lua'},     -- Optional
 	  }
     }
+
+    -- Java LSP
+    use 'mfussenegger/nvim-jdtls'
 
     use {
       "ray-x/lsp_signature.nvim",

@@ -22,3 +22,15 @@ vim.opt.signcolumn = "yes"
 vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
+
+-- Workaround for Neovim 0.12 bug: TSNode userdata can become invalid (freed C
+-- struct) while still being truthy in Lua, causing node:range() to fail inside
+-- the conceal_line decoration provider.
+vim.schedule(function()
+  local orig = vim.treesitter.get_range
+  vim.treesitter.get_range = function(node, source, metadata)
+    local ok, result = pcall(orig, node, source, metadata)
+    if not ok then return { 0, 0, 0, 0, 0, 0 } end
+    return result
+  end
+end)
