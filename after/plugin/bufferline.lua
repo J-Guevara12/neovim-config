@@ -1,6 +1,9 @@
 require("bufferline").setup{
+    highlights = {
+        fill = { bg = "none" },
+    },
     options = {
-        separator_style = "slant",
+        separator_style = "thin",
 
         diagnostics = "nvim_lsp",
         diagnostics_indicator = function(_, _, diagnostics_dict )
@@ -33,11 +36,13 @@ require("bufferline").setup{
         show_close_icon = false,
 
         offsets = {
-            filetype = "CHADTree",
-            text = "File Explorer",
-            highlight = "Directory",
-            separator = true,
-            text_align = "left"
+            {
+                filetype = "CHADTree",
+                text = "File Explorer",
+                highlight = "Directory",
+                separator = true,
+                text_align = "left",
+            }
         }
     }
 }
