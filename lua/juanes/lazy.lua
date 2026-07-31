@@ -13,7 +13,6 @@ require("lazy").setup({
   -- Telescope
   {
     'nvim-telescope/telescope.nvim',
-    tag = '0.1.2',
     dependencies = { 'nvim-lua/plenary.nvim' },
   },
 
@@ -22,15 +21,19 @@ require("lazy").setup({
     'folke/tokyonight.nvim',
     lazy = false,
     priority = 1000,
+  },
+  {
+    'rebelot/kanagawa.nvim',
+    lazy = false,
+    priority = 1000,
     config = function()
-      require('tokyonight').setup({
+      require('kanagawa').setup({
         transparent = true,
         styles = {
           sidebars = 'transparent',
           floats   = 'transparent',
         },
       })
-      vim.cmd.colorscheme('tokyonight')
     end,
   },
 
@@ -182,6 +185,7 @@ require("lazy").setup({
   {
     'stevearc/conform.nvim',
     config = function()
+      vim.g.disable_autoformat = true
       require('conform').setup({
         formatters_by_ft = {
           python          = { 'ruff_format', 'ruff_organize_imports' },
@@ -194,10 +198,20 @@ require("lazy").setup({
           json            = { 'prettier' },
           lua             = { 'stylua' },
         },
-        format_on_save = { timeout_ms = 500, lsp_fallback = true },
+        format_on_save = function(bufnr)
+          if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+            return
+          end
+          return { timeout_ms = 500, lsp_fallback = true }
+        end,
       })
-      vim.keymap.set({ 'n', 'v' }, '<leader>f', function()
+      -- <leader>f is taken by easymotion (go to char)
+      vim.keymap.set({ 'n', 'v' }, '<leader>vf', function()
         require('conform').format({ async = true, lsp_fallback = true })
+      end)
+      vim.keymap.set('n', '<leader>vF', function()
+        vim.g.disable_autoformat = not vim.g.disable_autoformat
+        vim.notify('Autoformat ' .. (vim.g.disable_autoformat and 'OFF' or 'ON'))
       end)
     end,
   },
@@ -305,11 +319,11 @@ require("lazy").setup({
           vim.keymap.set('n', ']h', gs.next_hunk, opts)
           vim.keymap.set('n', '[h', gs.prev_hunk, opts)
           vim.keymap.set('n', '<leader>gs', gs.stage_hunk, opts)
-          vim.keymap.set('n', '<leader>gr', gs.reset_hunk, opts)
+          vim.keymap.set('n', '<leader>gR', gs.reset_hunk, opts)
           vim.keymap.set('v', '<leader>gs', function()
             gs.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
           end, opts)
-          vim.keymap.set('v', '<leader>gr', function()
+          vim.keymap.set('v', '<leader>gR', function()
             gs.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') })
           end, opts)
           vim.keymap.set('n', '<leader>gS', gs.stage_buffer, opts)
@@ -319,7 +333,7 @@ require("lazy").setup({
             gs.blame_line({ full = true })
           end, opts)
           vim.keymap.set('n', '<leader>gl', gs.toggle_current_line_blame, opts)
-          vim.keymap.set('n', '<leader>gd', gs.diffthis, opts)
+          vim.keymap.set('n', '<leader>gdd', gs.diffthis, opts)
         end,
       })
     end,
@@ -381,4 +395,39 @@ require("lazy").setup({
       vim.keymap.set('n', '<leader>hp', function() harpoon:list():prev() end)
     end,
   },
+
+  -- HTTP client (Postman-like)
+  -- <leader>kr = send request  <leader>kt = toggle response  <leader>ki = inspect
+  -- <leader>kc = copy cURL     <leader>ke = env select       <leader>kq = close
+  -- Files: *.http  Variables: @baseUrl = http://localhost:3000
+  {
+    'mistweaverco/kulala.nvim',
+    ft = { 'http', 'rest' },
+    config = function()
+      require('kulala').setup({
+        default_view = 'body',
+        split_direction = 'vertical',
+        display_mode = 'split',
+      })
+
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'http', 'rest' },
+        callback = function()
+          local opts = { buffer = true, silent = true }
+          local k = require('kulala')
+          vim.keymap.set('n', '<leader>kr', k.run,              opts)
+          vim.keymap.set('n', '<leader>kt', k.toggle_view,      opts)
+          vim.keymap.set('n', '<leader>ki', k.inspect,          opts)
+          vim.keymap.set('n', '<leader>kc', k.copy,             opts)
+          vim.keymap.set('n', '<leader>ke', k.set_selected_env, opts)
+          vim.keymap.set('n', '<leader>kq', k.close,            opts)
+          vim.keymap.set('n', '[r', k.jump_prev,                opts)
+          vim.keymap.set('n', ']r', k.jump_next,                opts)
+        end,
+      })
+    end,
+  },
 })
+
+-- Cambia aquí para alternar entre temas
+vim.cmd.colorscheme('kanagawa-dragon')

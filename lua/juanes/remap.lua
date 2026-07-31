@@ -28,6 +28,10 @@ vim.keymap.set("v", "J", ":move '>+1<CR>gv=gv")
 vim.keymap.set("v", ">", ">gv")
 vim.keymap.set("v", "<", "<gv")
 
+-- Small keyboard issues
+vim.keymap.set("i", "zz", "<")
+vim.keymap.set("i", "ZZ", ">")
+
 -- Line snaping doesn't move
 vim.keymap.set("n", "J", "mzJ`z")
 -- Keep page jumps with cursor at the center

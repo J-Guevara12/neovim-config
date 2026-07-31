@@ -20,9 +20,20 @@ vim.opt.termguicolors = true
 vim.opt.scrolloff = 8
 vim.opt.signcolumn = "yes"
 vim.opt.isfname:append("@-@")
-
+vim.g.disable_autoformat=false
 vim.opt.updatetime = 50
-
+vim.g.clipboard = {
+  name = 'xsel',
+  copy = {
+    ['+'] = 'xsel --clipboard --input',
+    ['*'] = 'xsel --primary --input',
+  },
+  paste = {
+    ['+'] = 'xsel --clipboard --output',
+    ['*'] = 'xsel --primary --output',
+  },
+  cache_enabled = 0,
+}
 -- Workaround for Neovim 0.12 bug: TSNode userdata can become invalid (freed C
 -- struct) while still being truthy in Lua, causing node:range() to fail inside
 -- the conceal_line decoration provider.
